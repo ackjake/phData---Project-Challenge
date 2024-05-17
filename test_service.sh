@@ -1,6 +1,11 @@
 curl -X POST "http://localhost:8008/predict/" -H "accept: application/json" \
     -H "Content-Type: application/json" -d \
-    '{"features": [[4.0, 2.25, 1810.0, 9240.0, 2.0, 1810.0, 0.0, 26819.0, \
-    26793.0, 0.0, 0.0, 26.0, 42758.0, 23242.0, 178000.0, 1175.0, 1840.0, \
-    5582.0, 5846.0, 1670.0, 3749.0, 965.0, 99.0, 0.0, 0.0, 0.0, 4.0, 6.0, \
-    20.0, 21.0, 6.0, 13.0, 3.0]]}'
+    '{"zipcode": "98075",
+        "features": {"bedrooms": 4,
+        "bathrooms": 2.5,
+        "sqft_living": 2550,
+        "sqft_lot": 4630,
+        "floors": 2.0,
+        "sqft_above": 2550,
+        "sqft_basement": 0} 
+  }'

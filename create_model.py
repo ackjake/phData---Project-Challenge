@@ -62,6 +62,8 @@ def main():
                                    neighbors.KNeighborsRegressor()).fit(
                                        x_train, y_train)
 
+    breakpoint()
+
     output_dir = pathlib.Path(OUTPUT_DIR)
     output_dir.mkdir(exist_ok=True)
 
