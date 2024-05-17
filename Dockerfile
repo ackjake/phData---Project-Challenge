@@ -1,12 +1,18 @@
 FROM python:3.9
 
-RUN apt-get update && apt-get install -y \
-  nginx
-  && rm -rf /var/lib/apt/lists/*
+WORKDIR /usr/src/app
+
+COPY serve.py .
+COPY model/model.pkl .
+COPY model/model_features.json .
+COPY data/zipcode_demographics.csv .
+COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY serve .
-COPY model/model.pkl .
+ENV MODEL_PATH model.pkl
+ENV MODEL_FEATURES_PATH model_features.json
+ENV ZIPCODE_DEMOGRAPHICS_PATH zipcode_demographics.csv
 
-CMD ["uvicorn", "serve:app", "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "9999"]
+EXPOSE 9999
+CMD ["uvicorn", "serve:app", "--workers", "1", "--host", "0.0.0.0", "--port", "9999"]
