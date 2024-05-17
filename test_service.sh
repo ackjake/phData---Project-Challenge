@@ -1,5 +1,4 @@
 docker build -t phdata-app .
-docker images
 docker run -dp 9999:9999 --cpus=1 --memory=256m phdata-app
 
 curl -X POST "http://0.0.0.0:9999/predict/" -H "accept: application/json" \
