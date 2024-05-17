@@ -109,15 +109,14 @@ make a prediction, in the order they were passed during training.
 ## Deliverables/Requirements
 
 1. Deploy the model as an endpoint on a RESTful service which receives JSON
-POST data.
-    - The inputs to this endpoint should be the columns in
+POST data. The inputs to this endpoint should be the columns in
     `data/future_unseen_examples.csv`.
     - The endpoint should return a JSON object
     with a prediction from the model, as well as any metadata you see as
-    necessary.
+    necessary. [x]
     - The inputs to the endpoint **should not** include any of the demographic
     data from the `data/zipcode_demographics.csv` table.  Your service should
-    add this data on the backend.
+    add this data on the backend. [x]
     - Consider how your solution would scale as more users call the API.
     If possible, design a solution that allows scaling up or scaling down of API
     resources without stopping the service.  You don't have to actually
@@ -128,7 +127,7 @@ POST data.
     - Bonus: the basic model only uses a subset of the columns provided in the
     house sales data.
     Create an additional API endpoint where only the required features have
-    to be provided in order to get a prediction.
+    to be provided in order to get a prediction. [x]
 
 2. Create a test script which submits examples to the endpoint to demonstrate
 its behavior.  The examples should be taken from

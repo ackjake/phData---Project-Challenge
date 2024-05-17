@@ -5,10 +5,15 @@ from typing import List
 from typing import Tuple
 
 import pandas
+import numpy as np
 from sklearn import model_selection
 from sklearn import neighbors
 from sklearn import pipeline
 from sklearn import preprocessing
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+from sklearn.compose import TransformedTargetRegressor
+from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
+from sklearn.linear_model import LinearRegression
 
 SALES_PATH = "data/kc_house_data.csv"  # path to CSV with home sale data
 DEMOGRAPHICS_PATH = "data/kc_house_data.csv"  # path to CSV with demographics
@@ -64,15 +69,28 @@ def load_data(
 def main():
     """Load data, train model, and export artifacts."""
     x, y = load_data(SALES_PATH, DEMOGRAPHICS_PATH, SALES_COLUMN_SELECTION)
-    x_train, _x_test, y_train, _y_test = model_selection.train_test_split(
-        x, y, random_state=42
+    x_train, x_test, y_train, y_test = model_selection.train_test_split(
+        x, y, random_state=42, test_size=0.25
     )
 
     model = pipeline.make_pipeline(
-        preprocessing.RobustScaler(), neighbors.KNeighborsRegressor()
+        preprocessing.RobustScaler(),
+        HistGradientBoostingRegressor(
+            loss="gamma",
+            max_depth=4,
+            max_features=0.7,
+            max_iter=1000,
+            early_stopping=True,
+            random_state=42
+        ),
     ).fit(x_train, y_train)
 
-    breakpoint()
+    y_preds = model.predict(x_test)
+    rsq = r2_score(y_test, y_preds)
+    mse = mean_squared_error(y_test, y_preds)
+    mae = mean_absolute_error(y_test, y_preds)
+
+    print(f"Metrics: {rsq=}, {mse=}, {mae=}")
 
     output_dir = pathlib.Path(OUTPUT_DIR)
     output_dir.mkdir(exist_ok=True)
@@ -81,6 +99,9 @@ def main():
     pickle.dump(model, open(output_dir / "model.pkl", "wb"))
     json.dump(list(x_train.columns), open(output_dir / "model_features.json", "w"))
 
+
+# basic knn Metrics: rsq=0.7281424411798048, mse=40666526377.03607, mae=102044.6961880089
+# gbm gamma: rsq=0.8076093121212662, mse=28779265940.849903, mae=88937.87119510677
 
 if __name__ == "__main__":
     main()
