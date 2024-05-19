@@ -1,19 +1,12 @@
 import json
 import pathlib
 import pickle
-from typing import List
-from typing import Tuple
+from typing import List, Tuple
 
 import pandas
-import numpy as np
-from sklearn import model_selection
-from sklearn import neighbors
-from sklearn import pipeline
-from sklearn import preprocessing
-from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-from sklearn.compose import TransformedTargetRegressor
-from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
-from sklearn.linear_model import LinearRegression
+from sklearn import model_selection, pipeline, preprocessing
+from sklearn.ensemble import HistGradientBoostingRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 SALES_PATH = "data/kc_house_data.csv"  # path to CSV with home sale data
 DEMOGRAPHICS_PATH = "data/kc_house_data.csv"  # path to CSV with demographics
@@ -74,14 +67,13 @@ def main():
     )
 
     model = pipeline.make_pipeline(
-        preprocessing.RobustScaler(),
         HistGradientBoostingRegressor(
             loss="gamma",
             max_depth=4,
             max_features=0.7,
             max_iter=1000,
             early_stopping=True,
-            random_state=42
+            random_state=42,
         ),
     ).fit(x_train, y_train)
 
@@ -89,8 +81,7 @@ def main():
     rsq = r2_score(y_test, y_preds)
     mse = mean_squared_error(y_test, y_preds)
     mae = mean_absolute_error(y_test, y_preds)
-
-    print(f"Metrics: {rsq=}, {mse=}, {mae=}")
+    print(f"RSq2: {rsq:.2f}, MSE: {mse:.0f}, MAE: {mae:.0f}")
 
     output_dir = pathlib.Path(OUTPUT_DIR)
     output_dir.mkdir(exist_ok=True)
@@ -100,8 +91,8 @@ def main():
     json.dump(list(x_train.columns), open(output_dir / "model_features.json", "w"))
 
 
-# basic knn Metrics: rsq=0.7281424411798048, mse=40666526377.03607, mae=102044.6961880089
-# gbm gamma: rsq=0.8076093121212662, mse=28779265940.849903, mae=88937.87119510677
+# naive knn: RSq2=0.72, MSE=40666526377, MAE=102044
+# gbm gamma: RSq2: 0.80, MSE: 29395686789, MAE: 8898
 
 if __name__ == "__main__":
     main()

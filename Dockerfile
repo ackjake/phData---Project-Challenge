@@ -10,9 +10,5 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
-ENV MODEL_PATH model.pkl
-ENV MODEL_FEATURES_PATH model_features.json
-ENV ZIPCODE_DEMOGRAPHICS_PATH zipcode_demographics.csv
-
 EXPOSE 9999
 CMD ["uvicorn", "serve:app", "--workers", "1", "--host", "0.0.0.0", "--port", "9999"]

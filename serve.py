@@ -1,23 +1,17 @@
 #!/usr/bin/env python3
-import pickle
-import os
-from fastapi import FastAPI
-import pandas as pd
 import json
+import pickle
 
-MODEL_PATH = os.getenv("MODEL_PATH", "model/model.pkl")
-MODEL_FEATURES_PATH = os.getenv("MODEL_FEATURES_PATH", "model/model_features.json")
-DEMOGRAPHICS_DATA_PATH = os.getenv(
-    "ZIPCODE_DEMOGRAPHICS_PATH", "data/zipcode_demographics.csv"
-)
+import pandas as pd
+from fastapi import FastAPI
 
-model = pickle.load(open(MODEL_PATH, "rb"))
+model = pickle.load(open("model.pkl", "rb"))
 zipcode_demographics_features = (
-    pd.read_csv(DEMOGRAPHICS_DATA_PATH, dtype={"zipcode": str})
+    pd.read_csv("zipcode_demographics.csv", dtype={"zipcode": str})
     .set_index("zipcode")
     .to_dict("index")
 )
-ordered_features = json.load(open(MODEL_FEATURES_PATH, "rb"))
+ordered_features = json.load(open("model_features.json", "rb"))
 
 
 app = FastAPI()
@@ -25,11 +19,17 @@ app = FastAPI()
 
 @app.post("/predict/")
 def predict(payload: dict) -> dict:
-    """Method to predict
+    """Post method to predict property value.
 
-    required input format: {zipcode: x, features: {feature1: y, feature2: z, ...}}
+    Joins demographics data to input features on zipcode. Assumes that input
+    zipcode exists within zipcode_demographics.csv.
 
-    other docs...
+    Args:
+        payload: json input, requires zipcode and features as keys.
+            Expected input: {zipcode: x, features: {feature1: x, feature2: y, ...}}
+
+    Returns:
+        Paylod containing property value estimate.
     """
     features = zipcode_demographics_features[payload["zipcode"]]
     features.update(payload["features"])
